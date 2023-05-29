@@ -22,7 +22,6 @@ public class SimulationMagaer : MonoBehaviour
         StartYPosInput.text = null;
         EndXPosInput.text = null;
         EndYPosInput.text = null;
-
     }
 
     private void Update()
@@ -50,10 +49,5 @@ public class SimulationMagaer : MonoBehaviour
         PlayerPrefs.SetString("EndYPos", EndXPosInput.text);
 
         SceneManager.LoadScene(PlayerPrefs.GetInt("LevelDesign"));
-    }
-
-    public void OnClickBackToMenu()
-    {
-        SceneManager.LoadScene(0);
     }
 }

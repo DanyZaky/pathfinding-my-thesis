@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using TMPro;
+using UnityEngine.UI;
 
 public class Pathfinder : MonoBehaviour {
     Node m_startNode;
@@ -15,6 +16,8 @@ public class Pathfinder : MonoBehaviour {
     PriorityQueue<Node> m_frontierNodes;
     List<Node> m_exploredNodes;
     List<Node> m_pathNodes;
+
+    
 
     public Color startColor = Color.green;
     public Color goalColor = Color.red;
@@ -34,11 +37,15 @@ public class Pathfinder : MonoBehaviour {
     int m_iteration = 0;
 
     [SerializeField] private TextMeshProUGUI infoText;
-    public GameObject regenerateButton;
+    public GameObject regenerateButton, dijkstraButton, astarButton, infoSelected;
 
     private void Start()
     {
         regenerateButton.SetActive(false);
+        dijkstraButton.GetComponent<Button>().interactable = false;
+        astarButton.GetComponent<Button>().interactable = true;
+        infoSelected.GetComponent<TextMeshProUGUI>().text = "Dijkstra Selected!";
+        mode = Mode.Dijkstra;
     }
 
     private float BytesToMegabytes(long bytes)
@@ -46,14 +53,35 @@ public class Pathfinder : MonoBehaviour {
         return bytes / (1024f * 1024f);
     }
 
-    public enum Mode {
-        BreadthFirstSearch = 0,
-        Dijkstra = 1,
-        GreedyBastFirstSearch = 2,
-        AStar = 3
+    public Mode mode;
+
+    public void OnClickAlgorithmSelect(int value)
+    {
+        if (value == 0)
+        {
+            dijkstraButton.GetComponent<Button>().interactable = false;
+            astarButton.GetComponent<Button>().interactable = true;
+
+            infoSelected.GetComponent<TextMeshProUGUI>().text = "Dijkstra Selected!";
+
+            mode = Mode.Dijkstra;
+        }
+        else if (value == 1)
+        {
+            dijkstraButton.GetComponent<Button>().interactable = true;
+            astarButton.GetComponent<Button>().interactable = false;
+
+            infoSelected.GetComponent<TextMeshProUGUI>().text = "A-Star Selected!";
+
+            mode = Mode.AStar;
+        }
     }
 
-    public Mode mode = Mode.BreadthFirstSearch;
+    public enum Mode {
+        Dijkstra,
+        AStar
+    }
+
     public void Init(Graph graph, GraphView graphView, Node start, Node goal) {
         if (graph == null || graphView == null || start == null || goal == null) {
             Debug.LogError("Missing Component");
@@ -121,12 +149,8 @@ public class Pathfinder : MonoBehaviour {
                 if (!m_exploredNodes.Contains(currentNode)) {
                     m_exploredNodes.Add(currentNode);
                 }
-                if (mode == Mode.BreadthFirstSearch) {
-                    ExpandFrontierBreadthFirst(currentNode);
-                } else if (mode == Mode.Dijkstra) {
+                if (mode == Mode.Dijkstra) {
                     ExpandFrontierDijkstra(currentNode);
-                } else if (mode == Mode.GreedyBastFirstSearch) {
-                    ExpandFrontierGreedyBestFirst(currentNode);
                 } else if (mode == Mode.AStar) {
                     ExpandFrontierAStar(currentNode);
                 }
@@ -153,7 +177,7 @@ public class Pathfinder : MonoBehaviour {
         infoText.gameObject.SetActive(true);
 
         infoText.text = "Time : " + (Time.realtimeSinceStartup - timeStart).ToString("F2") + " seconds\n" +
-            "Distance : " + m_goalNode.distanceTraveled.ToString("0") + "\n" +
+            "Distance : " + m_goalNode.distanceTraveled.ToString("0") + " units\n" +
             "Memory : " + totalMemoryMB.ToString("F2") + " MB";
 
         regenerateButton.SetActive(true);

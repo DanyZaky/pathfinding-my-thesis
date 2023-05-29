@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class DemoController : MonoBehaviour {
@@ -43,10 +44,16 @@ public class DemoController : MonoBehaviour {
     {
         StartCoroutine(pathfinder.SearchRoutine(timeStep));
         startGenerateButton.SetActive(false);
+        pathfinder.dijkstraButton.GetComponent<Button>().interactable = false;
+        pathfinder.astarButton.GetComponent<Button>().interactable = false;
     }
 
     public void OnClickRegenerate()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    public void OnClickBackToMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 }
